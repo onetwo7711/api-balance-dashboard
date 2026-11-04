@@ -1,0 +1,29 @@
+{
+  "genre": "general",
+  "route": "html-template",
+  "theme": "user-chinese-document-convention",
+  "typography": {
+    "east_asia_font": "SimSun",
+    "body_size": "12pt",
+    "body_text_indent": "2em",
+    "text_color": "#000000"
+  },
+  "heading": {
+    "color": "#000000",
+    "italic": false,
+    "indent": 0
+  },
+  "table": {
+    "header_align": "center",
+    "header_shading": "none",
+    "column_width": "auto",
+    "cell_text_indent": 0
+  },
+  "page_furniture": {
+    "cover": false,
+    "toc": false,
+    "header_footer": false,
+    "reason": "用户未要求，使用说明以正文为主，避免冗余"
+  },
+  "source": "stage1/final_draft.md"
+}

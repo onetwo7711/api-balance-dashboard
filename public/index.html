@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8">
+<title>API账户余额看板</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="floatBar" class="float-bar" hidden>
+  <div class="float-drag">
+    <span class="float-title">余额看板</span>
+  </div>
+  <div class="float-actions">
+    <label class="float-opacity" title="窗口透明度">
+      <span>透明度</span>
+      <input id="floatOpacity" type="range" min="30" max="100" step="5" value="95">
+    </label>
+    <button id="floatRefreshBtn" class="float-btn" type="button" title="刷新余额">刷新</button>
+    <button id="floatTopBtn" class="float-btn" type="button" title="切换置顶显示">置顶</button>
+    <button id="floatMainBtn" class="float-btn" type="button" title="打开主窗口">主窗口</button>
+    <button id="floatHideBtn" class="float-btn float-btn-close" type="button" title="隐藏悬浮窗">×</button>
+  </div>
+</div>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">¥</div>
+      <div class="brand-text">
+        <h1>API账户余额看板</h1>
+        <p class="subtitle">智谱GLM与DeepSeek账户余额，一屏掌握</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="refreshBtn" class="btn btn-primary" type="button">
+        <span class="icon-refresh" aria-hidden="true">↻</span><span id="refreshLabel">刷新余额</span>
+      </button>
+      <button id="settingsBtn" class="btn btn-ghost" type="button" aria-expanded="false" aria-controls="settingsPanel">设置</button>
+    </div>
+  </header>
+
+  <div class="statusbar" role="status">
+    <div class="status-left">
+      <span id="globalDot" class="dot dot-idle" aria-hidden="true"></span>
+      <span id="globalStatus">正在载入配置…</span>
+    </div>
+    <div class="status-right">
+      <span id="autoStatus">自动刷新：读取中</span>
+      <span class="divider" aria-hidden="true"></span>
+      <span id="countdown"></span>
+    </div>
+  </div>
+
+  <section id="settingsPanel" class="panel" hidden aria-label="设置">
+    <div class="panel-head">
+      <h2>接口与刷新设置</h2>
+      <button id="closeSettingsBtn" class="icon-btn" type="button" aria-label="关闭设置">×</button>
+    </div>
+
+    <div class="form-grid">
+      <fieldset class="field-group">
+        <legend>智谱GLM</legend>
+        <label for="glmKey">API密钥</label>
+        <div class="input-row">
+          <input id="glmKey" type="password" autocomplete="off" spellcheck="false" placeholder="请输入API密钥">
+          <button class="btn btn-tiny" type="button" data-clear="glm">清除</button>
+        </div>
+        <p class="field-hint" id="glmKeyHint">密钥仅保存在本机，留空表示不修改。</p>
+
+        <label for="glmCurrency">余额币种</label>
+        <select id="glmCurrency">
+          <option value="CNY">CNY·人民币</option>
+          <option value="USD">USD·美元</option>
+        </select>
+        <p class="field-hint">智谱国内站余额按人民币计，国际站可切换为美元。</p>
+
+        <details class="advanced">
+          <summary>高级选项</summary>
+          <label for="glmBaseUrl">接口基础地址</label>
+          <input id="glmBaseUrl" type="url" spellcheck="false" placeholder="https://open.bigmodel.cn">
+          <label for="glmCustomEndpoint">自定义余额接口地址</label>
+          <input id="glmCustomEndpoint" type="url" spellcheck="false" placeholder="留空则依次尝试内置接口">
+          <p class="field-hint">智谱未公开余额API，本工具内置控制台使用的账户接口并自动回退。若接口变更，可在此填写返回balance字段的完整地址。</p>
+        </details>
+      </fieldset>
+
+      <fieldset class="field-group">
+        <legend>DeepSeek</legend>
+        <label for="dsKey">API密钥</label>
+        <div class="input-row">
+          <input id="dsKey" type="password" autocomplete="off" spellcheck="false" placeholder="请输入API密钥">
+          <button class="btn btn-tiny" type="button" data-clear="deepseek">清除</button>
+        </div>
+        <p class="field-hint" id="dsKeyHint">密钥仅保存在本机，留空表示不修改。</p>
+
+        <label for="dsEndpoint">余额接口地址</label>
+        <input id="dsEndpoint" type="url" spellcheck="false" placeholder="https://api.deepseek.com/user/balance">
+        <p class="field-hint">官方接口为https://api.deepseek.com/user/balance，币种由接口返回值自动识别（CNY或USD）。</p>
+
+        <details class="advanced">
+          <summary>说明</summary>
+          <p class="field-hint">官方余额接口返回总余额、赠金余额与充值余额。余额不足时平台会拒绝调用，看板会同步给出提示。</p>
+        </details>
+      </fieldset>
+    </div>
+
+    <div class="form-footer">
+      <div class="refresh-field">
+        <label for="refreshSeconds">自动刷新间隔</label>
+        <select id="refreshSeconds">
+          <option value="0">关闭</option>
+          <option value="60">每1分钟</option>
+          <option value="300">每5分钟</option>
+          <option value="900">每15分钟</option>
+          <option value="1800">每30分钟</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button id="saveBtn" class="btn btn-primary" type="button">保存并刷新</button>
+        <button id="cancelBtn" class="btn btn-ghost" type="button">取消</button>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div id="cards" class="cards" aria-live="polite"></div>
+  </main>
+
+  <footer class="footer">
+    <p>密钥保存在本机data/config.json（权限仅当前用户可读），页面只接收脱敏信息，不上传任何凭据。</p>
+    <p id="lanHint"></p>
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="alert" hidden></div>
+<script src="./app.js"></script>
+</body>
+</html>

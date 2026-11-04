@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>API账户余额看板 · 服务未就绪</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f6f8; color: #111;
+         font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  .box { max-width: 420px; margin: 24px; padding: 28px 26px; background: #fff; border: 1px solid #e3e6ea;
+         border-radius: 16px; box-shadow: 0 8px 24px rgba(16, 24, 40, .05); }
+  h1 { margin: 0 0 10px; font-size: 18px; font-weight: 650; }
+  p { margin: 0 0 8px; font-size: 13.5px; line-height: 1.65; color: #5b6472; }
+  .addr { font-family: "Courier New", monospace; color: #111; }
+  .actions { margin-top: 18px; display: flex; gap: 10px; }
+  button { font: inherit; font-size: 14px; padding: 9px 16px; border-radius: 10px; border: 1px solid #e3e6ea;
+           background: #fff; cursor: pointer; }
+  button.primary { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+  .tip { margin-top: 16px; font-size: 12px; color: #8a929e; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>本地服务未就绪</h1>
+  <p>余额看板依赖本机运行的本地服务读取配置并向平台查询余额。当前页面无法连接到该服务。</p>
+  <p>服务地址：<span class="addr" id="addr">未知</span></p>
+  <p>可尝试重新载入；若仍失败，请退出应用后重新启动。</p>
+  <div class="actions">
+    <button class="primary" id="retryBtn">重新载入</button>
+    <button id="quitBtn">退出应用</button>
+  </div>
+  <p class="tip">若本机开启了防火墙或代理软件拦截本机回环地址，也可能造成该现象。</p>
+</div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const address = params.get('address');
+  if (address) document.getElementById('addr').textContent = address;
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    if (window.desktopAPI && window.desktopAPI.retry) window.desktopAPI.retry();
+    else if (address) window.location.href = address;
+  });
+  document.getElementById('quitBtn').addEventListener('click', () => {
+    if (window.desktopAPI && window.desktopAPI.quit) window.desktopAPI.quit();
+    else window.close();
+  });
+</script>
+</body>
+</html>

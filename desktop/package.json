@@ -1,0 +1,74 @@
+{
+  "name": "api-balance-dashboard",
+  "productName": "API账户余额看板",
+  "version": "1.0.0",
+  "description": "智谱GLM与DeepSeek账户余额桌面看板",
+  "main": "main.js",
+  "private": true,
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "sync": "node scripts/sync-resources.js",
+    "start": "npm run sync && electron .",
+    "dev": "npm run sync && electron . --dev",
+    "pack": "npm run sync && electron-builder --dir",
+    "dist": "npm run sync && electron-builder",
+    "dist:mac": "npm run sync && electron-builder --mac",
+    "dist:win": "npm run sync && electron-builder --win",
+    "dist:linux": "npm run sync && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "45.2.2",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "cn.local.apibalancedashboard",
+    "productName": "API账户余额看板",
+    "electronVersion": "45.2.2",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "fallback.html",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources",
+        "to": "."
+      }
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities",
+      "identity": null,
+      "darkModeSupport": true
+    },
+    "dmg": {
+      "title": "API账户余额看板 ${version}"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "API账户余额看板"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility"
+    }
+  }
+}
