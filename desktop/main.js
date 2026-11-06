@@ -85,7 +85,6 @@ async function startLocalServer() {
         port,
         host: '127.0.0.1',
         open: false,
-        dataDir: app.isPackaged ? path.join(USER_DATA, 'data') : undefined,
       });
       return result;
     } catch (err) {

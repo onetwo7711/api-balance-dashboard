@@ -1,0 +1,26 @@
+schema_version: 1
+request_id: A2759A2E-0F29-4F29-A57D-CE3B3617E59A
+created_at: 2026-11-06T15:24:00+08:00
+updated_at: 2026-11-06T15:30:00+08:00
+entry_type: full_pipeline
+stage_chain: [1, 2, 3]
+revision_of: 04-修订-桌面应用形态
+revision_reason: 配置目录统一到系统用户配置目录并自动迁移旧配置、补充应用图标与双架构安装包说明、同步页面页脚与注意事项口径
+output_docx_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx
+output_docx_user_specified: false
+current_stage: completed
+stages:
+  stage_0: {status: completed, completed_at: 2026-11-06T15:24:00+08:00, decision: full_pipeline}
+  stage_1: {status: completed, completed_at: 2026-11-06T15:26:00+08:00, output_path: stage1/final_draft.md, genre: general, expert_used: general-writer, route_tag: general_writing, changes: 8}
+  stage_2: {status: completed, completed_at: 2026-11-06T15:24:00+08:00, route: html, html_sub: template, output_path: stage2/formatted-API账户余额看板使用说明.html, output_format: html, skills_invoked: [design-token, doc-typeset, html-review], fallback: false, html_chars: 12513, table_count: 4, heading_count: 10}
+  stage_3: {status: completed, completed_at: 2026-11-06T15:25:00+08:00, executor: doc-converter, input_format: html, output_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx, skill_used: [html-to-doc], present_files_opened: false, docx_bytes: 20915}
+consistency_check: {output_files_exist: pass, stage_chain_complete: pass, last_checked_at: 2026-11-06T15:30:00+08:00, errors: [], docx_content_keys: pass, italic_tags: 0, text_colors: ["000000"], table_count: 4, cn_en_spacing_hits_total: 0}
+code_changes:
+  - {file: server.js, change: 新增resolveDataDir与migrateLegacyConfig，配置目录改为平台约定用户目录并自动迁移旧配置}
+  - {file: server.py, change: 同步resolve_data_dir与ensure_migrated逻辑，Python版与Node版共用同一份config.json}
+  - {file: desktop/main.js, change: 移除dataDir覆盖，桌面端与浏览器形态共用同一配置目录}
+  - {file: public/index.html, change: 页脚密钥保存位置口径改为用户配置目录}
+  - {file: desktop/scripts/make-icon.py, change: 新增，纯标准库绘制应用图标并用iconutil合成icns}
+  - {file: desktop/package.json, change: 接入build.mac.icon与build.win.icon与build.linux.icon，新增npm run icon脚本}
+  - {file: desktop/build/icon.png, change: 新增，1024×1024图标源图}
+  - {file: desktop/build/icon.icns, change: 新增，macOS图标}

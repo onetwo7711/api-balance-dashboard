@@ -4,7 +4,8 @@
 
 与server.js功能等价，仅使用Python标准库，无需安装Node.js或任何第三方包。
 适用于macOS自带的Python 3（需3.7及以上）。
-密钥只保存在本机data/config.json，页面只接收脱敏信息。
+密钥只保存在本机的用户配置目录（macOS为~/Library/Application Support/API账户余额看板），
+页面只接收脱敏信息。
 """
 
 import base64
@@ -16,6 +17,7 @@ import json
 import math
 import os
 import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -28,12 +30,48 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parent
 PUBLIC_DIR = ROOT / "public"
-DATA_DIR = ROOT / "data"
-CONFIG_FILE = DATA_DIR / "config.json"
+LEGACY_DATA_DIR = ROOT / "data"
 PORT = int(os.environ.get("PORT", "8787"))
 HOST = os.environ.get("HOST", "127.0.0.1")
 NO_OPEN = os.environ.get("NO_OPEN") == "1"
 REQUEST_TIMEOUT = 12
+
+
+def resolve_data_dir() -> Path:
+    """按平台约定确定配置目录，使浏览器形态与桌面应用形态共用同一份配置。"""
+    override = os.environ.get("BALANCE_DATA_DIR")
+    if override:
+        return Path(override).expanduser()
+    home = Path.home()
+    if sys.platform == "darwin":
+        return home / "Library" / "Application Support" / "API账户余额看板"
+    if os.name == "nt":
+        return Path(os.environ.get("APPDATA") or home / "AppData" / "Roaming") / "API账户余额看板"
+    return Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config") / "API账户余额看板"
+
+
+DATA_DIR = resolve_data_dir()
+CONFIG_FILE = DATA_DIR / "config.json"
+_migrated = False
+
+
+def ensure_migrated() -> None:
+    """新目录尚无配置而旧目录存在时，复制旧配置过来，保证升级后密钥不丢；旧文件保留不删除。"""
+    global _migrated
+    if _migrated:
+        return
+    _migrated = True
+    legacy_file = LEGACY_DATA_DIR / "config.json"
+    target_file = DATA_DIR / "config.json"
+    if target_file.exists() or not legacy_file.exists():
+        return
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(legacy_file, target_file)
+        os.chmod(target_file, 0o600)
+        print(f"已把旧目录的配置迁移到：{target_file}")
+    except OSError as exc:
+        print(f"旧配置迁移失败：{exc}")
 
 DEFAULTS = {
     "glm": {
@@ -93,6 +131,7 @@ class ApiError(Exception):
 # ---------------------------------------------------------------- 配置
 
 def read_config():
+    ensure_migrated()
     saved = {}
     try:
         saved = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
@@ -109,6 +148,7 @@ def read_config():
 
 
 def write_config(config):
+    ensure_migrated()
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     try:
         os.chmod(DATA_DIR, 0o700)

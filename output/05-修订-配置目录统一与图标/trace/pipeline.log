@@ -1,0 +1,7 @@
+{"stage":0,"ts":"2026-11-06T15:24:00+08:00","action":"init","detail":"第5轮修订：配置目录统一到系统用户目录并迁移旧配置、应用图标、双架构安装包、页面页脚口径同步"}
+{"stage":1,"ts":"2026-11-06T15:26:00+08:00","action":"edit","detail":"final_draft.md 共8处修改：桌面形态共用配置表述、安装包双架构说明、配置文件路径、注意事项中的密钥位置、Python与Node共用配置、升级迁移说明、BALANCE_DATA_DIR说明、桌面端窗口状态与配置同目录"}
+{"stage":2,"ts":"2026-11-06T15:24:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html，12513字符，4张表，10个标题"}
+{"stage":3,"ts":"2026-11-06T15:25:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx，20915字节"}
+{"stage":"check","ts":"2026-11-06T15:30:00+08:00","action":"verify","detail":"关键词用户配置目录、BALANCE_DATA_DIR、Intel版、自动复制过去、window-state.json、config.json路径全部命中；斜体0；文字颜色仅000000；表格4；中西文空格自检0命中"}
+{"stage":"code","ts":"2026-11-06T15:22:00+08:00","action":"implement","detail":"server.js与server.py配置目录统一与迁移、desktop/main.js去掉dataDir覆盖、public/index.html页脚口径、desktop/scripts/make-icon.py新增图标脚本、desktop/package.json接入三平台图标"}
+{"stage":"verify","ts":"2026-11-06T15:22:00+08:00","action":"runtime","detail":"Node后端启动实测：旧目录配置自动复制到~/Library/Application Support/API账户余额看板/config.json并读到；Python后端读到同一份配置且未重复迁移；旧文件保留未删除"}

@@ -1,6 +1,15 @@
 .DS_Store
+# 沙箱环境每次执行命令会在项目根或子目录留下的8位随机名临时文件（环境禁止删除，需忽略以免误提交）
+/[a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9]
+**/[a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_][a-z0-9_]
+__pycache__/
 desktop/node_modules/
 desktop/dist/
+desktop/.build-*/
+desktop/.tmp/
+desktop/.packtest/
 desktop/resources/
+desktop/*.log
+desktop/*.pid
 data/
 output/**/stage2/intermediate/

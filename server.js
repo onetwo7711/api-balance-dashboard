@@ -4,7 +4,8 @@
  * API账户余额看板 · 本地服务
  * 零第三方依赖，仅使用 Node.js 内置模块（需要 Node 18+）。
  * 职责：托管静态页面、持久化本地配置、代理查询两个平台的余额接口。
- * 密钥只保存在本机 data/config.json，不会回传给页面的完整明文。
+ * 密钥只保存在本机的用户配置目录（macOS为~/Library/Application Support/API账户余额看板），
+ * 不会回传给页面的完整明文。
  */
 
 const http = require('node:http');
@@ -18,9 +19,54 @@ const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, 'public');
-let DATA_DIR = path.join(ROOT, 'data');
-let CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const LEGACY_DATA_DIR = path.join(ROOT, 'data');
 const REQUEST_TIMEOUT = 12000;
+
+/**
+ * 按平台约定确定配置目录，使浏览器形态、命令行形态与桌面应用形态共用同一份配置。
+ * 可用环境变量 BALANCE_DATA_DIR 覆盖。
+ */
+function resolveDataDir() {
+  if (process.env.BALANCE_DATA_DIR) return path.resolve(process.env.BALANCE_DATA_DIR);
+  const home = os.homedir();
+  if (process.platform === 'darwin') return path.join(home, 'Library', 'Application Support', 'API账户余额看板');
+  if (process.platform === 'win32') return path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'API账户余额看板');
+  return path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'API账户余额看板');
+}
+
+let DATA_DIR = resolveDataDir();
+let CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+let migrated = false;
+
+/** 新目录尚无配置而旧目录存在时，复制旧配置过来，保证升级后密钥不丢；旧文件保留不删除。 */
+function migrateLegacyConfig(targetDir) {
+  const legacyFile = path.join(LEGACY_DATA_DIR, 'config.json');
+  const targetFile = path.join(targetDir, 'config.json');
+  if (fs.existsSync(targetFile) || !fs.existsSync(legacyFile)) return false;
+  try {
+    fs.mkdirSync(targetDir, { recursive: true, mode: 0o700 });
+    fs.copyFileSync(legacyFile, targetFile);
+    fs.chmodSync(targetFile, 0o600);
+    console.log(`已把旧目录的配置迁移到：${targetFile}`);
+    return true;
+  } catch (err) {
+    console.error('旧配置迁移失败：', err.message);
+    return false;
+  }
+}
+
+function ensureMigrated() {
+  if (migrated) return;
+  migrated = true;
+  migrateLegacyConfig(DATA_DIR);
+}
+
+function setDataDir(dir) {
+  DATA_DIR = dir;
+  CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+  migrated = false;
+  ensureMigrated();
+}
 
 const DEFAULTS = {
   glm: {
@@ -55,6 +101,7 @@ const MIME = {
 // ---------------------------------------------------------------- 配置读写
 
 function readConfig() {
+  ensureMigrated();
   let saved = {};
   try {
     saved = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
@@ -69,6 +116,7 @@ function readConfig() {
 }
 
 function writeConfig(config) {
+  ensureMigrated();
   fs.mkdirSync(DATA_DIR, { recursive: true, mode: 0o700 });
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), { mode: 0o600 });
   try { fs.chmodSync(CONFIG_FILE, 0o600); } catch { /* 部分文件系统不支持chmod */ }
@@ -547,8 +595,7 @@ function startServer(options = {}) {
   const host = options.host || HOST;
   const open = options.open !== false;
   if (options.dataDir) {
-    DATA_DIR = options.dataDir;
-    CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+    setDataDir(options.dataDir);
   }
   const server = http.createServer(createRequestHandler());
   return new Promise((resolve, reject) => {
