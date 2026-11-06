@@ -17,6 +17,8 @@
 2. 旧配置自动迁移。新目录没有配置而旧目录（程序目录`data/config.json`）存在时，启动时自动复制一份过去，旧文件保留不删除；可用环境变量`BALANCE_DATA_DIR`指定自定义目录。
 3. 应用图标。新增`desktop/scripts/make-icon.py`，纯标准库按SDF绘制1024×1024图标（近黑圆角方块＋白色上升折线＋绿色端点），用sips与iconutil合成icns；`desktop/package.json`接入`build.mac.icon`（icns）与`build.win`、`build.linux.icon`（png），新增`npm run icon`脚本。
 4. 文档第5轮修订（`output/05-修订-配置目录统一与图标`）：8处修改，并同步`public/index.html`页脚的密钥保存位置口径。
+5. 修复桌面端API密钥框无法粘贴。根因是`desktop/main.js`的`buildMenu`用自定义菜单替换了Electron默认菜单时遗漏了「编辑」角色，macOS上剪切、复制、粘贴的快捷键依赖该角色派发，输入框内按CommandOrControl+V因此没有反应。已在菜单中加入撤销、重做、剪切、复制、粘贴、粘贴并匹配样式与全选。
+6. 文档第6轮修订（`output/06-修订-桌面端粘贴与菜单`）：3处修改，说明文档同步粘贴方式，并把安装包口径收敛为只保留macOS版本。
 
 ## 三、验证结论
 
@@ -28,8 +30,8 @@
 ## 四、遗留问题与已知限制
 
 1. macOS安装包未做代码签名与公证，首次打开需右键选择「打开」，或执行`xattr -dr com.apple.quarantine "/Applications/API账户余额看板.app"`。
-2. Intel版安装包尚未生成，需要执行`electron-builder --mac dmg --x64`。
-3. 本宿主环境下electron-builder不可用：无论在沙箱进程内还是在独立会话中执行，都会在解压electron阶段静默挂起（进程消失、日志无报错）。本轮因此改用手工组装刷新应用内容：把`app.asar`换成`Contents/Resources/app`目录、替换`server.js`与`public/`、覆盖图标、ad-hoc重新签名。Electron桌面应用在沙箱内启动同样会因无法删除userData下的`SingletonLock`而退出，这两条均为宿主环境限制，用户本机双击运行不受影响。
+2. 只维护macOS版本，Intel、Windows与Linux包不再考虑。
+3. electron-builder只能在独立会话中运行：在沙箱进程内会在解压electron阶段静默挂起（进程消失、日志无报错）。本轮产物由独立会话完成，采用「在`/Users/tsubasa/.workbuddy/cache/api-balance-build/manual/`下组装、去掉`app.asar`改放`Contents/Resources/app`目录、替换`server.js`与`public/`与图标、`ditto`打包zip、`hdiutil`制作dmg、最后复制进dist」的流程，dmg与zip均已产出。Electron桌面应用在沙箱内启动会因无法删除userData下的`SingletonLock`而退出，属宿主限制，用户本机双击运行不受影响。
 4. 沙箱内`mkdir`、`tee`、`tail`等命令被代理包装后无法创建临时文件，执行构建类命令时改用`python3 -c`建目录、直接重定向写日志，并显式设置`TMPDIR`到工作区内。
 5. 悬浮窗透明度依赖系统窗口合成能力，Linux下不可用，滑块会自动禁用。
 6. macOS全局快捷键需在系统设置→隐私与安全性→辅助功能中授权，否则失效并在主窗口页脚提示。
@@ -39,12 +41,11 @@
 
 ## 五、下一步可直接继续的事项
 
-1. 确认`desktop/dist/`下的arm64安装包是否已刷新为含新图标与新配置逻辑的版本（看zip与dmg的时间戳）。若仍未刷新，按手工组装流程执行：在工作区外复制基底.app、去掉`app.asar`改放`Contents/Resources/app`目录、更新`server.js`与`public/`与图标、`codesign --force --deep --sign -`重签名、`ditto -c -k --sequesterRsrc --keepParent`打包zip、`hdiutil create -format UDZO`制作dmg，最后复制进dist。Intel版需要x64运行时，在本宿主环境无法产出。
-2. 配置签名与公证：需Apple开发者证书，在`build.mac.identity`填证书名并补充notarization配置。
-3. 构建Windows与Linux包：需在对应系统或用GitHub Actions完成（`--win`依赖Wine环境）。
-4. 若继续修改软件：先改`server.js`与`public/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`working/tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
-5. 若新增功能并接入桌面端：主进程能力通过`desktop/preload.js`暴露，页面用`window.desktopAPI`判断桌面环境。
-6. 提交本轮收尾改动：仓库中还有6个文件处于已修改未提交状态（`.workbuddy/memory/2026-11-06.md`、`API账户余额看板-续接说明.md`、`output/00-最终交付/API账户余额看板使用说明.docx`、`output/05-修订-配置目录统一与图标/pipeline-state.yaml`、`stage1/final_draft.md`、`stage2/formatted-API账户余额看板使用说明.html`）。内容均已落盘不会丢失，清掉第四节第9条所说的锁文件后执行`git add -A && git commit`即可。
+1. 安装包已是最新版本（`desktop/dist/`下的zip与dmg均含新图标、新配置逻辑与粘贴修复，看时间戳核对）。若日后需重新生成，按第四节第3条的流程执行。
+2. 签名与公证（可选）：自用不需要；若要分发给同事，需Apple开发者证书，在`build.mac.identity`填证书名并补充notarization配置。
+3. 若继续修改软件：先改`server.js`与`public/`、`desktop/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`working/tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
+4. 若新增功能并接入桌面端：主进程能力通过`desktop/preload.js`暴露，页面用`window.desktopAPI`判断桌面环境。
+5. 提交状态：配置目录与图标等核心改动已提交（`57fa096`、`a29ac5d`、`defceee`），桌面端粘贴修复的提交由20:22触发的独立会话任务完成；提交前需先删掉`.git/index.lock`与`.git/index2.lock`。
 
 ## 六、常用命令
 

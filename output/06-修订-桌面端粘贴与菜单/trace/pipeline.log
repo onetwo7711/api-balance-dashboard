@@ -1,0 +1,8 @@
+{"stage":0,"ts":"2026-11-06T20:10:00+08:00","action":"init","detail":"第6轮修订：修复桌面端API密钥无法粘贴，安装包说明收敛为只保留macOS版本"}
+{"stage":"diag","ts":"2026-11-06T20:11:00+08:00","action":"diagnose","detail":"排查粘贴失效：public/index.html的input无onpaste与maxlength限制，styles.css无user-select限制，最终定位到desktop/main.js的buildMenu用自定义菜单替换了Electron默认菜单且遗漏编辑角色，macOS上剪切复制粘贴快捷键依赖Edit角色派发，导致CommandOrControl+V在输入框失效"}
+{"stage":"code","ts":"2026-11-06T20:12:00+08:00","action":"implement","detail":"buildMenu模板中加入「编辑」菜单，含undo、redo、cut、copy、paste、pasteAndMatchStyle、selectAll"}
+{"stage":"package","ts":"2026-11-06T20:13:00+08:00","action":"repackage","detail":"把新main.js同步到dist内应用与工作区外暂存区应用，用ditto重新生成zip（119885142字节）并覆盖交付目录；dmg由独立会话用hdiutil重建"}
+{"stage":1,"ts":"2026-11-06T20:14:00+08:00","action":"edit","detail":"final_draft.md 3处修改：桌面应用形态只保留macOS版本、安装包说明去掉Windows与Linux及Intel表述、输入说明补API密钥粘贴方式"}
+{"stage":2,"ts":"2026-11-06T20:15:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html，12557字符，4张表，10个标题"}
+{"stage":3,"ts":"2026-11-06T20:16:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx，20994字节"}
+{"stage":"check","ts":"2026-11-06T20:17:00+08:00","action":"verify","detail":"关键词支持直接粘贴、CommandOrControl+V、用户配置目录、Apple芯片版全部命中，Intel版表述已移除；斜体0；文字颜色仅000000；表格4；中西文空格自检0命中"}
