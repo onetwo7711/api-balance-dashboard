@@ -56,7 +56,7 @@ API账户余额看板是一款在本机运行的余额查看工具，用于同�
 
 - 主窗口形态：标准应用窗口，顶部为标题区与「刷新余额」「设置」按钮，下方是状态条与两张余额卡片，布局与浏览器形态完全一致；窗口可自由缩放与移动，尺寸和位置会被记住，下次启动自动恢复。
 - 桌面应用自带本地服务，启动应用即可使用，不需要另外运行命令行版本；浏览器形态、命令行形态与桌面应用形态共用同一份配置，在任一处保存的密钥在其他形态中同样生效。
-- 安装包：macOS为.dmg（分Apple芯片版与Intel版两个文件，按机器芯片选择），Windows为安装程序.exe，Linux为.AppImage。macOS版本未做代码签名，首次打开需在访达中右键点击应用并选择「打开」，或在命令行执行`xattr -dr com.apple.quarantine "/Applications/API账户余额看板.app"`。
+- 安装包：macOS为.dmg，当前提供Apple芯片版（Intel版需在具备对应构建环境时另行生成），Windows为安装程序.exe，Linux为.AppImage；若不便使用dmg，也可直接使用zip压缩包或应用目录。macOS版本未做代码签名，首次打开需在访达中右键点击应用并选择「打开」，或在命令行执行`xattr -dr com.apple.quarantine "/Applications/API账户余额看板.app"`。
 - 开发调试：在desktop目录执行`npm start`启动应用，`npm run pack`生成免安装目录，`npm run dist`按当前平台打包；菜单「开发者工具」可打开调试面板。
 
 ### 悬浮窗形态

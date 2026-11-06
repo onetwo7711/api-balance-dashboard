@@ -12,8 +12,8 @@ current_stage: completed
 stages:
   stage_0: {status: completed, completed_at: 2026-11-06T15:24:00+08:00, decision: full_pipeline}
   stage_1: {status: completed, completed_at: 2026-11-06T15:26:00+08:00, output_path: stage1/final_draft.md, genre: general, expert_used: general-writer, route_tag: general_writing, changes: 8}
-  stage_2: {status: completed, completed_at: 2026-11-06T15:24:00+08:00, route: html, html_sub: template, output_path: stage2/formatted-API账户余额看板使用说明.html, output_format: html, skills_invoked: [design-token, doc-typeset, html-review], fallback: false, html_chars: 12513, table_count: 4, heading_count: 10}
-  stage_3: {status: completed, completed_at: 2026-11-06T15:25:00+08:00, executor: doc-converter, input_format: html, output_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx, skill_used: [html-to-doc], present_files_opened: false, docx_bytes: 20915}
+  stage_2: {status: completed, completed_at: 2026-11-06T15:24:00+08:00, route: html, html_sub: template, output_path: stage2/formatted-API账户余额看板使用说明.html, output_format: html, skills_invoked: [design-token, doc-typeset, html-review], fallback: false, html_chars: 12546, table_count: 4, heading_count: 10}
+  stage_3: {status: completed, completed_at: 2026-11-06T15:25:00+08:00, executor: doc-converter, input_format: html, output_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx, skill_used: [html-to-doc], present_files_opened: false, docx_bytes: 20973}
 consistency_check: {output_files_exist: pass, stage_chain_complete: pass, last_checked_at: 2026-11-06T15:30:00+08:00, errors: [], docx_content_keys: pass, italic_tags: 0, text_colors: ["000000"], table_count: 4, cn_en_spacing_hits_total: 0}
 code_changes:
   - {file: server.js, change: 新增resolveDataDir与migrateLegacyConfig，配置目录改为平台约定用户目录并自动迁移旧配置}
