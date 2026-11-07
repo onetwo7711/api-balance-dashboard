@@ -1,0 +1,9 @@
+{"stage":0,"ts":"2026-11-07T17:20:00+08:00","action":"init","detail":"第8轮修订：新增主窗口悬浮窗按钮、悬浮窗信息精简、去除悬浮窗阴影、单平台刷新功能"}
+{"stage":"code","ts":"2026-11-07T17:22:00+08:00","action":"implement","detail":"desktop/main.js新增IPC float:open-solo（创建或显示悬浮窗后关闭主窗口）；desktop/preload.js暴露openSolo；public/index.html顶部新增floatSoloBtn；public/app.js新增initDesktopButtons（仅桌面端显示）与refreshPlatform（调用/api/balance?only=platform只刷新单个平台，刷新中按钮转圈禁用，失败时写入该平台错误码）；卡片标题栏新增data-refresh按钮与事件委托；悬浮窗形态下不再输出接口来源与本次耗时"}
+{"stage":"style","ts":"2026-11-07T17:23:00+08:00","action":"style","detail":"public/styles.css去掉悬浮窗标题条的box-shadow；新增.card-head-right与.card-refresh样式，悬浮窗下按钮缩小为20px"}
+{"stage":"verify","ts":"2026-11-07T17:25:00+08:00","action":"runtime","detail":"语法检查通过（app.js/main.js/preload.js）；11项改动点自检全过；接口实测：/api/balance?only=glm只返回glm且查询成功，only=deepseek只返回deepseek，不带参数返回两个平台"}
+{"stage":1,"ts":"2026-11-07T17:27:00+08:00","action":"edit","detail":"final_draft.md 7处修改：启动小节补悬浮窗按钮说明、悬浮窗形态补信息精简与去阴影与单平台刷新、界面表补悬浮窗按钮与卡片刷新按钮两行、日常查看补单平台刷新说明、输出表标注接口来源与本次耗时在悬浮窗不显示、输入补单平台刷新"}
+{"stage":2,"ts":"2026-11-07T17:28:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html"}
+{"stage":3,"ts":"2026-11-07T17:28:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx"}
+{"stage":"package","ts":"2026-11-07T17:30:00+08:00","action":"repack","detail":"由独立会话任务重新组装应用并生成zip与dmg（当前会话无法挂载磁盘卷），同时校验包内main.js含float:open-solo、preload.js含openSolo、页面含floatSoloBtn与refreshPlatform、样式含box-shadow: none与.card-refresh"}
+{"stage":"push","ts":"2026-11-07T17:35:00+08:00","action":"publish","detail":"提交并推送到 https://github.com/onetwo7711/api-balance-dashboard.git（main分支），凭据已在系统钥匙串，代理走仓库级127.0.0.1:7897"}

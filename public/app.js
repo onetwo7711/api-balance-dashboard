@@ -13,6 +13,7 @@ const state = {
   items: {},
   lastGood: loadCache(),
   loading: false,
+  loadingPlatform: null,
   timer: null,
   nextAt: null,
   lastRefreshAt: null,
@@ -42,7 +43,9 @@ async function api(url, options) {
   if (!response.ok) {
     const info = data && data.error;
     const message = info && typeof info === 'object' ? `${info.message}${info.hint ? `：${info.hint}` : ''}` : (info || `请求失败（HTTP ${response.status}）`);
-    throw new Error(message);
+    const err = new Error(message);
+    err.code = info && typeof info === 'object' ? info.code : 'UNKNOWN';
+    throw err;
   }
   return data;
 }
@@ -117,7 +120,7 @@ function cardHtml(platform) {
   const updatedAt = shown ? shown.updatedAt : null;
   const timeText = updatedAt ? `${formatTime(updatedAt)}（${relativeTime(updatedAt)}）` : '—';
   const metaRows = [`<div class="meta-row"><span class="meta-label">最近更新时间</span><span class="meta-value">${esc(timeText)}</span></div>`];
-  if (fresh) {
+  if (fresh && MODE !== 'float') {
     metaRows.push(`<div class="meta-row"><span class="meta-label">接口来源</span><span class="meta-value">${esc(fresh.source || '平台接口')}</span></div>`);
     metaRows.push(`<div class="meta-row"><span class="meta-label">本次耗时</span><span class="meta-value">${esc(fresh.latencyMs)}毫秒</span></div>`);
   }
@@ -137,10 +140,16 @@ function cardHtml(platform) {
   }
   const staleHtml = stale && !failed ? `<div class="stale">尚未完成本次查询，显示上次成功数据。</div>` : '';
 
-  return `<article class="card" aria-label="${esc(platform === 'glm' ? '智谱GLM余额' : 'DeepSeek余额')}">
+  const platformName = platform === 'glm' ? '智谱GLM' : 'DeepSeek';
+  const refreshSpin = state.loadingPlatform === platform ? ' spinning' : '';
+  const refreshDisabled = state.loadingPlatform ? ' disabled' : '';
+  return `<article class="card" aria-label="${esc(platformName + '余额')}">
     <div class="card-head">
-      <div class="card-title"><span class="dot ${dotClass}" aria-hidden="true"></span>${esc(platform === 'glm' ? '智谱GLM' : 'DeepSeek')}</div>
-      <div class="card-state">${esc(stateText)}</div>
+      <div class="card-title"><span class="dot ${dotClass}" aria-hidden="true"></span>${esc(platformName)}</div>
+      <div class="card-head-right">
+        <div class="card-state">${esc(stateText)}</div>
+        <button class="card-refresh${refreshSpin}" type="button" data-refresh="${platform}" title="刷新${esc(platformName)}余额" aria-label="刷新${esc(platformName)}余额"${refreshDisabled}>↻</button>
+      </div>
     </div>
     <div class="amount-block">${amountHtml}</div>
     <div class="balance-note">${esc(note)}</div>
@@ -236,6 +245,39 @@ async function refreshAll() {
   } finally {
     state.loading = false;
     setLoading(false);
+    renderAll();
+  }
+}
+
+/** 只刷新单个平台，不影响另一个平台的卡片与整体状态。 */
+async function refreshPlatform(platform) {
+  if (!PLATFORMS.includes(platform) || state.loadingPlatform || state.loading) return;
+  state.loadingPlatform = platform;
+  renderAll();
+  try {
+    const data = await api(`/api/balance?only=${encodeURIComponent(platform)}`);
+    const item = (data.items || []).find((i) => i.platform === platform);
+    if (item) {
+      state.items[platform] = item;
+      if (item.ok) state.lastGood[platform] = item;
+      saveCache();
+      state.lastRefreshAt = data.serverTime;
+    }
+  } catch (err) {
+    const message = err && err.message ? err.message : '未知错误';
+    state.items[platform] = {
+      platform, ok: false, balance: null, currency: 'CNY', breakdown: [],
+      updatedAt: null, source: '', latencyMs: 0,
+      error: {
+        code: (err && err.code) || 'UNKNOWN',
+        message: '查询失败',
+        hint: message,
+        detail: '',
+      },
+    };
+    showToast('刷新失败：' + message);
+  } finally {
+    state.loadingPlatform = null;
     renderAll();
   }
 }
@@ -372,6 +414,17 @@ function initFloatBar() {
   }
 }
 
+function initDesktopButtons() {
+  const btn = $('floatSoloBtn');
+  if (!btn) return;
+  if (!IS_DESKTOP || !window.desktopAPI || !window.desktopAPI.openSolo) {
+    btn.remove();
+    return;
+  }
+  btn.hidden = false;
+  btn.addEventListener('click', () => window.desktopAPI.openSolo());
+}
+
 function initDesktopHints() {
   if (!IS_DESKTOP || MODE === 'float') return;
   const footer = document.querySelector('.footer');
@@ -399,6 +452,10 @@ function bindEvents() {
   document.querySelectorAll('[data-clear]').forEach((btn) => {
     btn.addEventListener('click', () => clearKey(btn.dataset.clear));
   });
+  document.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-refresh]');
+    if (btn) refreshPlatform(btn.dataset.refresh);
+  });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && state.nextAt && Date.now() >= state.nextAt && !state.loading) refreshAll();
   });
@@ -407,6 +464,7 @@ function bindEvents() {
 (async function init() {
   bindEvents();
   initFloatBar();
+  initDesktopButtons();
   initDesktopHints();
   renderAll();
   setInterval(updateCountdown, 1000);

@@ -126,7 +126,17 @@ input::placeholder { color: #9aa1ab; }
 }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .card-title { display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 650; color: var(--text); }
+.card-head-right { display: flex; align-items: center; gap: 8px; }
 .card-state { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+.card-refresh {
+  width: 24px; height: 24px; flex: 0 0 24px; padding: 0; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  cursor: pointer; display: grid; place-items: center; font-size: 13px; line-height: 1;
+}
+.card-refresh:hover { color: var(--text); border-color: #b9c0c9; }
+.card-refresh:disabled { opacity: .55; cursor: not-allowed; }
+.card-refresh.spinning { animation: spin .9s linear infinite; }
+body.mode-float .card-refresh { width: 20px; height: 20px; flex-basis: 20px; font-size: 12px; }
 .amount-block { display: flex; align-items: baseline; gap: 10px; margin: 18px 0 4px; flex-wrap: wrap; }
 .amount {
   font-size: clamp(34px, 5vw, 46px); font-weight: 680; line-height: 1.1; letter-spacing: -1.2px;
@@ -209,7 +219,7 @@ body.mode-float .float-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   margin: 8px 8px 0; padding: 6px 8px 6px 10px; border-radius: 10px;
   background: rgba(255, 255, 255, .93); border: 1px solid var(--border);
-  box-shadow: 0 6px 18px rgba(16, 24, 40, .14);
+  box-shadow: none;
   -webkit-app-region: drag;
 }
 .float-drag { flex: 1 1 auto; min-width: 0; -webkit-app-region: drag; }

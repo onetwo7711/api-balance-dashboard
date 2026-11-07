@@ -277,6 +277,12 @@ function buildMenu() {
 function registerIpc() {
   ipcMain.handle('float:toggle', () => { toggleFloat(); return Boolean(floatWindow && !floatWindow.isDestroyed() && floatWindow.isVisible()); });
   ipcMain.handle('float:hide', () => { if (floatWindow && !floatWindow.isDestroyed()) floatWindow.hide(); return true; });
+  ipcMain.handle('float:open-solo', () => {
+    if (!floatWindow || floatWindow.isDestroyed()) createFloatWindow();
+    else { floatWindow.show(); floatWindow.focus(); }
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+    return true;
+  });
   ipcMain.handle('float:set-opacity', (_event, value) => setFloatOpacity(value));
   ipcMain.handle('float:set-always-on-top', (_event, value) => setFloatAlwaysOnTop(value));
   ipcMain.handle('window:show-main', () => { showMain(); return true; });
