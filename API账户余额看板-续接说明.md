@@ -46,7 +46,7 @@
 
 1. 安装包已是最新版本（`desktop/dist/`下的zip与dmg均含新图标、新配置逻辑与粘贴修复，看时间戳核对）。若日后需重新生成，按第四节第3条的流程执行。
 2. 签名与公证（可选）：自用不需要；若要分发给同事，需Apple开发者证书，在`build.mac.identity`填证书名并补充notarization配置。
-3. 若继续修改软件：先改`server.js`与`public/`、`desktop/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`working/tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
+3. 若继续修改软件：先改`server.js`与`public/`、`desktop/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
 4. 若新增功能并接入桌面端：主进程能力通过`desktop/preload.js`暴露，页面用`window.desktopAPI`判断桌面环境。
 5. 提交状态：配置目录与图标等核心改动已提交（`57fa096`、`a29ac5d`、`defceee`），桌面端粘贴修复的提交由20:22触发的独立会话任务完成；提交前需先删掉`.git/index.lock`与`.git/index2.lock`。
 
@@ -55,5 +55,5 @@
 - 本地服务调试：仅开发时用`node server.js`直接启动（默认端口8787，可用`PORT`与`BALANCE_DATA_DIR`覆盖），正式使用一律走桌面应用。
 - 桌面开发：`cd desktop && npm start`（自动同步资源并启动）、`npm run pack`（免安装目录）、`npm run dist`（按当前平台打包）、`npm run icon`（重绘图标）。
 - 构建目录：先把`desktop/`、`server.js`、`public/`同步到`/Users/tsubasa/.workbuddy/cache/api-balance-build/`，再执行`node scripts/sync-resources.js`，然后在该目录运行`./node_modules/.bin/electron-builder`。
-- 文档重建：在修订轮目录运行`python3 working/tools/md2html.py`，再用html-to-doc的`convert_doc.py`覆盖`output/00-最终交付/`中的docx。
+- 文档重建：在修订轮目录运行`python3 tools/md2html.py`（七轮同源脚本已合并为此一份），再用html-to-doc的`convert_doc.py`覆盖`output/00-最终交付/`中的docx。
 - git解锁：`rm -f .git/index.lock .git/index2.lock`，随后`git status`即可正常。
