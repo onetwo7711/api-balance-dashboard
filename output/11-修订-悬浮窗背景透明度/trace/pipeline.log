@@ -1,0 +1,9 @@
+{"stage":0,"ts":"2026-11-07T18:05:00+08:00","action":"init","detail":"第11轮修订：悬浮窗透明度改为只作用于背景，并去掉调整大小时左上角的虚线方框"}
+{"stage":"fix","ts":"2026-11-07T18:07:00+08:00","action":"fix","detail":"左上角虚线方框的来源是上一轮加的四角L形缩放标记（SVG描边短线），在左上角看起来像残缺方框。改为只在右下角画一个18×18的实心三角角标（linear-gradient 135deg），左上角不再有任何标记"}
+{"stage":"code","ts":"2026-11-07T18:09:00+08:00","action":"implement","detail":"透明度改造：desktop/main.js去掉floatWindow.setOpacity（窗口保持完全不透明），改为把透明度写入URL参数（?mode=float&opacity=0.95）并在setFloatOpacity时通过float:opacity通道推送给页面；desktop/preload.js新增onFloatOpacity订阅；public/app.js新增applyFloatAlpha把透明度写入CSS变量--float-alpha并同步滑块位置，滑块拖动时本地立即生效再通知主进程记忆"}
+{"stage":"style","ts":"2026-11-07T18:11:00+08:00","action":"style","detail":"public/styles.css：body.mode-float定义--float-alpha变量并加-webkit-font-smoothing:antialiased；标题条与卡片的背景改为rgba(255,255,255,var(--float-alpha))，面板容器背景改为transparent避免两层alpha叠加导致透明度打折；文字颜色不变，始终不透明"}
+{"stage":"verify","ts":"2026-11-07T18:13:00+08:00","action":"render","detail":"Edge无头渲染断言（opacity=0.3）：CSS变量为0.3，卡片与标题条背景均为rgba(255,255,255,0.3)，金额文字色rgb(17,17,17)且opacity为1，面板容器背景transparent，角标定位right:0 bottom:0尺寸18×18为linear-gradient（仅右下角）；语法检查全部通过"}
+{"stage":1,"ts":"2026-11-07T18:15:00+08:00","action":"edit","detail":"final_draft.md 2处修改：透明度说明改为只作用背景且文字不透明，缩放提示由四角标记改为右下角三角角标"}
+{"stage":2,"ts":"2026-11-07T18:16:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html"}
+{"stage":3,"ts":"2026-11-07T18:16:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx"}
+{"stage":"package","ts":"2026-11-07T18:20:00+08:00","action":"repack","detail":"由独立会话任务重新组装并生成zip与dmg，校验包内含float:opacity通道、onFloatOpacity、applyFloatAlpha、--float-alpha变量，且此前各轮改动仍在"}

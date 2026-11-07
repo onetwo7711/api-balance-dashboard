@@ -3,6 +3,7 @@
 const CACHE_KEY = 'balance-dashboard-last-good-v1';
 const PAGE_PARAMS = new URLSearchParams(window.location.search);
 const MODE = PAGE_PARAMS.get('mode') === 'float' ? 'float' : 'window';
+const INITIAL_FLOAT_ALPHA = Math.min(1, Math.max(0.3, Number(PAGE_PARAMS.get('opacity')) || 0.95));
 const IS_DESKTOP = Boolean(window.desktopAPI && window.desktopAPI.isDesktop);
 if (MODE === 'float') document.body.classList.add('mode-float');
 const PLATFORMS = ['glm', 'deepseek'];
@@ -378,10 +379,24 @@ async function clearKey(platform) {
 
 // ---------------------------------------------------------------- 初始化
 
+// 透明度只作用于背景色，文字保持完全不透明
+function applyFloatAlpha(value) {
+  const alpha = Math.min(1, Math.max(0.3, Number(value) || 0.95));
+  document.body.style.setProperty('--float-alpha', String(alpha));
+  const slider = $('floatOpacity');
+  if (slider && Number(slider.value) !== Math.round(alpha * 100)) {
+    slider.value = String(Math.round(alpha * 100));
+  }
+}
+
 function initFloatBar() {
   if (MODE !== 'float') return;
   const bar = $('floatBar');
   if (bar) bar.hidden = false;
+  applyFloatAlpha(INITIAL_FLOAT_ALPHA);
+  if (window.desktopAPI && window.desktopAPI.onFloatOpacity) {
+    window.desktopAPI.onFloatOpacity((value) => applyFloatAlpha(value));
+  }
   const opacity = $('floatOpacity');
   const topBtn = $('floatTopBtn');
   const refreshBtn = $('floatRefreshBtn');
@@ -399,17 +414,15 @@ function initFloatBar() {
   }
   if (opacity) {
     opacity.addEventListener('input', () => {
-      if (window.desktopAPI) window.desktopAPI.setOpacity(Number(opacity.value) / 100);
+      const value = Number(opacity.value) / 100;
+      applyFloatAlpha(value);
+      if (window.desktopAPI) window.desktopAPI.setOpacity(value);
     });
   }
   if (window.desktopAPI && window.desktopAPI.getFloatState) {
     window.desktopAPI.getFloatState().then((info) => {
-      if (opacity) opacity.value = String(Math.round((info.opacity ?? 0.95) * 100));
+      applyFloatAlpha(info.opacity ?? INITIAL_FLOAT_ALPHA);
       if (topBtn) topBtn.classList.toggle('is-active', info.alwaysOnTop !== false);
-      if (opacity && info.opacitySupported === false) {
-        opacity.disabled = true;
-        opacity.title = '当前系统不支持窗口透明度调节';
-      }
     });
   }
 }

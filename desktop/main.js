@@ -177,9 +177,7 @@ function createFloatWindow() {
     },
   });
   floatWindow.setAlwaysOnTop(state.float.alwaysOnTop !== false, 'floating');
-  if (process.platform !== 'linux') {
-    try { floatWindow.setOpacity(clampOpacity(state.float.opacity)); } catch (err) { console.error('设置透明度失败：', err.message); }
-  }
+  // 窗口本身保持不透明，透明度改由页面的背景色承担，文字始终清晰
   floatWindow.on('resize', rememberFloatBounds);
   floatWindow.on('move', rememberFloatBounds);
   floatWindow.on('resize', () => {
@@ -195,7 +193,7 @@ function createFloatWindow() {
     floatMoveTimer = setTimeout(() => { floatState.moving = false; pushFloatState(); }, 180);
   });
   floatWindow.on('closed', () => { floatWindow = null; });
-  floatWindow.loadURL(`${serverAddress}/?mode=float`);
+  floatWindow.loadURL(`${serverAddress}/?mode=float&opacity=${clampOpacity(state.float.opacity)}`);
   return floatWindow;
 }
 
@@ -221,8 +219,8 @@ function toggleFloat() {
 function setFloatOpacity(value) {
   state.float.opacity = clampOpacity(value);
   saveState();
-  if (floatWindow && !floatWindow.isDestroyed() && process.platform !== 'linux') {
-    try { floatWindow.setOpacity(state.float.opacity); } catch (err) { console.error('设置透明度失败：', err.message); }
+  if (floatWindow && !floatWindow.isDestroyed()) {
+    floatWindow.webContents.send('float:opacity', state.float.opacity);
   }
   return state.float.opacity;
 }

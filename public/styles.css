@@ -215,12 +215,12 @@ body.mode-float .card-refresh { width: 20px; height: 20px; flex-basis: 20px; fon
 
 /* 桌面悬浮窗形态 */
 .float-bar { display: none; }
-body.mode-float { background: transparent; }
+body.mode-float { background: transparent; --float-alpha: .95; -webkit-font-smoothing: antialiased; }
 body.mode-float .float-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   flex-wrap: wrap;
   margin: 8px; padding: 6px 8px 6px 10px; border-radius: 12px;
-  background: rgba(255, 255, 255, .93); border: 1px solid var(--border);
+  background: rgba(255, 255, 255, var(--float-alpha, .95)); border: 1px solid var(--border);
   box-shadow: none;
   -webkit-app-region: drag;
 }
@@ -240,7 +240,7 @@ body.mode-float .topbar { display: none; }
 body.mode-float .statusbar { display: none; }
 body.mode-float .status-right { display: none; }
 body.mode-float .cards { grid-template-columns: 1fr; gap: 8px; }
-body.mode-float .card { padding: 12px 14px; border-radius: 12px; }
+body.mode-float .card { padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, var(--float-alpha, .95)); }
 body.mode-float .meta-row { flex-wrap: wrap; row-gap: 2px; }
 body.mode-float .meta-value { text-align: left; }
 body.mode-float .balance-note { display: none; }
@@ -264,7 +264,7 @@ body.mode-float .toast { bottom: 10px; }
 body.mode-float .app {
   position: relative;
   border-radius: 12px;
-  background: rgba(255, 255, 255, .96);
+  background: transparent;
   outline: 1px solid rgba(17, 24, 39, .26);
   outline-offset: -1px;
 }
@@ -280,21 +280,19 @@ body.mode-float .app::before {
 body.mode-float.dragging .app {
   outline: 2px solid #1a1a1a;
   outline-offset: -2px;
-  background: rgba(255, 255, 255, .99);
 }
 body.mode-float.dragging .app::before { background: #1a1a1a; }
 body.mode-float.resizing .app {
   outline: 2px solid #b7791f;
   outline-offset: -2px;
-  background: rgba(255, 255, 255, .99);
 }
 body.mode-float.resizing .app::before { background: #b7791f; }
 body.mode-float.resizing .app::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 13 V0 H13 M27 0 H40 V13 M40 27 V40 H27 M13 40 H0 V27' fill='none' stroke='%23b7791f' stroke-width='2'/></svg>");
-  background-repeat: no-repeat;
-  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  right: 0; bottom: 0;
+  width: 18px; height: 18px;
+  background: linear-gradient(135deg, transparent 50%, #b7791f 50%);
+  border-bottom-right-radius: 12px;
   pointer-events: none;
 }

@@ -1,0 +1,28 @@
+schema_version: 1
+request_id: 6F4A9E23-8D71-4C56-B0A8-51E7C93D2B64
+created_at: 2026-11-07T18:05:00+08:00
+updated_at: 2026-11-07T18:18:00+08:00
+entry_type: full_pipeline
+stage_chain: [1, 2, 3]
+revision_of: 10-修订-悬浮窗精简与对齐
+revision_reason: 悬浮窗透明度改为只作用于背景（文字始终不透明），并去掉调整大小时左上角出现的虚线方框
+output_docx_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx
+output_docx_user_specified: false
+current_stage: completed
+stages:
+  stage_0: {status: completed, completed_at: 2026-11-07T18:05:00+08:00, decision: full_pipeline}
+  stage_1: {status: completed, completed_at: 2026-11-07T18:15:00+08:00, output_path: stage1/final_draft.md, genre: general, expert_used: general-writer, route_tag: general_writing, changes: 2}
+  stage_2: {status: completed, completed_at: 2026-11-07T18:16:00+08:00, route: html, html_sub: template, output_path: stage2/formatted-API账户余额看板使用说明.html, output_format: html, skills_invoked: [design-token, doc-typeset, html-review], fallback: false, html_chars: 10683, table_count: 4, heading_count: 10}
+  stage_3: {status: completed, at: 2026-11-07T18:16:00+08:00, executor: doc-converter, input_format: html, output_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx, skill_used: [html-to-doc], present_files_opened: false, docx_bytes: 19436}
+consistency_check: {output_files_exist: pass, stage_chain_complete: pass, last_checked_at: 2026-11-07T18:17:00+08:00, errors: [], docx_content_keys: pass, italic_tags: 0, text_colors: ["000000"], table_count: 4, cn_en_spacing_hits_total: 0, alpha_background: "rgba(255,255,255,0.3)", text_opacity: 1}
+code_changes:
+  - {file: desktop/main.js, change: 去掉窗口setOpacity改为页面背景透明度，透明度经URL参数与float:opacity通道传给页面}
+  - {file: desktop/preload.js, change: 新增onFloatOpacity订阅通道}
+  - {file: public/app.js, change: 新增applyFloatAlpha写入CSS变量--float-alpha并同步滑块，滑块拖动本地即时生效}
+  - {file: public/styles.css, change: 标题条与卡片背景改用var(--float-alpha)，面板容器背景改透明避免alpha叠加；缩放角标由四角改为右下角实心三角}
+artifact_changes:
+  - {file: desktop/dist/API账户余额看板.app, change: 重新组装并刷新主进程与页面资源}
+  - {file: desktop/dist/API账户余额看板-1.0.0-arm64.zip, change: 重新打包}
+  - {file: desktop/dist/API账户余额看板-1.0.0-arm64.dmg, change: 重新生成}
+publish:
+  - {remote: "https://github.com/onetwo7711/api-balance-dashboard.git", branch: main, note: "凭据存于系统钥匙串，代理走仓库级127.0.0.1:7897"}
