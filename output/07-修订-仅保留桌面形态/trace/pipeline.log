@@ -1,0 +1,7 @@
+{"stage":0,"ts":"2026-11-07T14:44:00+08:00","action":"init","detail":"第7轮修订：按用户要求删除浏览器形态，只保留桌面应用形态"}
+{"stage":"code","ts":"2026-11-07T14:46:00+08:00","action":"implement","detail":"server.js去掉自动打开浏览器逻辑（删除child_process的exec依赖与open分支），局域网地址改为仅在显式监听0.0.0.0时返回，避免桌面端页面显示无法访问的手机访问提示；desktop/main.js移除startServer的open参数"}
+{"stage":"delete","ts":"2026-11-07T14:47:00+08:00","action":"remove","detail":"删除浏览器形态入口文件start.command与Python版后端server.py，由独立会话任务执行删除并重新打包"}
+{"stage":1,"ts":"2026-11-07T14:50:00+08:00","action":"rewrite","detail":"final_draft.md整篇重写为纯桌面应用说明：用途改为桌面应用，运行环境只保留macOS，启动与退出改为双击应用与单实例行为，删除浏览器启动命令、环境变量、手机查看场景与终端提示类异常，补充悬浮窗与粘贴说明"}
+{"stage":2,"ts":"2026-11-07T14:51:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html，9924字符，4张表，10个标题"}
+{"stage":3,"ts":"2026-11-07T14:51:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx，18510字节"}
+{"stage":"check","ts":"2026-11-07T14:52:00+08:00","action":"verify","detail":"关键词桌面应用、悬浮窗、用户配置目录、粘贴全部命中；浏览器形态、python3 server.py、start.command、HOST=0.0.0.0、手机访问均已清除；斜体0；文字颜色仅000000；表格4"}

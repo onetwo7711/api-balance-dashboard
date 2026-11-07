@@ -13,7 +13,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const os = require('node:os');
-const { exec } = require('node:child_process');
 
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
@@ -23,7 +22,7 @@ const LEGACY_DATA_DIR = path.join(ROOT, 'data');
 const REQUEST_TIMEOUT = 12000;
 
 /**
- * 按平台约定确定配置目录，使浏览器形态、命令行形态与桌面应用形态共用同一份配置。
+ * 按平台约定确定配置目录，使桌面应用与命令行调试共用同一份配置。
  * 可用环境变量 BALANCE_DATA_DIR 覆盖。
  */
 function resolveDataDir() {
@@ -151,7 +150,7 @@ function publicConfig(config) {
       endpoint: config.deepseek.endpoint,
     },
     refreshSeconds: config.refreshSeconds,
-    server: { host: HOST, port: PORT, lanAddresses: lanAddresses() },
+    server: { host: HOST, port: PORT, lanAddresses: HOST === '0.0.0.0' ? lanAddresses() : [] },
   };
 }
 
@@ -593,7 +592,6 @@ function createRequestHandler() {
 function startServer(options = {}) {
   const port = Number(options.port || PORT);
   const host = options.host || HOST;
-  const open = options.open !== false;
   if (options.dataDir) {
     setDataDir(options.dataDir);
   }
@@ -619,9 +617,6 @@ function startServer(options = {}) {
       }
       console.log('  按Ctrl+C停止服务');
       console.log('');
-      if (open && process.platform === 'darwin' && host === '127.0.0.1' && process.env.NO_OPEN !== '1') {
-        exec(`open "${address}"`, () => {});
-      }
       resolve({ server, address, port, host });
     });
   });

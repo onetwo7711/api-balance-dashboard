@@ -84,7 +84,6 @@ async function startLocalServer() {
       const result = await startServer({
         port,
         host: '127.0.0.1',
-        open: false,
       });
       return result;
     } catch (err) {
