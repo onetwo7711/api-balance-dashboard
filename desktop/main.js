@@ -142,6 +142,17 @@ function createMainWindow() {
   return mainWindow;
 }
 
+// 悬浮窗交互状态：分别标记「正在拖动」与「正在调整大小」，交给页面显示可操作边界
+const floatState = { moving: false, resizing: false };
+let floatMoveTimer = null;
+let floatResizeTimer = null;
+
+function pushFloatState() {
+  if (floatWindow && !floatWindow.isDestroyed()) {
+    floatWindow.webContents.send('float:state', { moving: floatState.moving, resizing: floatState.resizing });
+  }
+}
+
 function createFloatWindow() {
   const bounds = clampBounds(state.float, 280, 260);
   floatWindow = new BrowserWindow({
@@ -171,6 +182,18 @@ function createFloatWindow() {
   }
   floatWindow.on('resize', rememberFloatBounds);
   floatWindow.on('move', rememberFloatBounds);
+  floatWindow.on('resize', () => {
+    floatState.resizing = true;
+    pushFloatState();
+    clearTimeout(floatResizeTimer);
+    floatResizeTimer = setTimeout(() => { floatState.resizing = false; pushFloatState(); }, 260);
+  });
+  floatWindow.on('move', () => {
+    floatState.moving = true;
+    pushFloatState();
+    clearTimeout(floatMoveTimer);
+    floatMoveTimer = setTimeout(() => { floatState.moving = false; pushFloatState(); }, 180);
+  });
   floatWindow.on('closed', () => { floatWindow = null; });
   floatWindow.loadURL(`${serverAddress}/?mode=float`);
   return floatWindow;

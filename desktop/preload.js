@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('desktopAPI', {
   getFloatState: () => ipcRenderer.invoke('float:get-state'),
   getShortcutStatus: () => ipcRenderer.invoke('shortcut:status'),
   openSolo: () => ipcRenderer.invoke('float:open-solo'),
+  onFloatState: (cb) => ipcRenderer.on('float:state', (_event, value) => cb(value)),
   retry: () => ipcRenderer.invoke('app:retry'),
   quit: () => ipcRenderer.invoke('app:quit'),
 });

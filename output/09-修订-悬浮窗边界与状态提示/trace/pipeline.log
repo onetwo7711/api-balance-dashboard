@@ -1,0 +1,9 @@
+{"stage":0,"ts":"2026-11-07T17:58:00+08:00","action":"init","detail":"第9轮修订：悬浮窗操作边界与三态提示"}
+{"stage":"code","ts":"2026-11-07T18:00:00+08:00","action":"implement","detail":"desktop/main.js新增floatState状态与pushFloatState推送，复用窗口已有的move与resize事件并加防抖复位（拖动180毫秒、缩放260毫秒）；desktop/preload.js暴露onFloatState；public/app.js新增initFloatState订阅并切换body的dragging与resizing类"}
+{"stage":"style","ts":"2026-11-07T18:02:00+08:00","action":"style","detail":"public/styles.css新增悬浮窗边界：静止为1px细灰描边（outline-offset:-1px，向内画以免被窗口裁切）、拖动为2px深色并加顶部2px状态条、调整大小为2px琥珀色并叠加四角L形缩放标记（SVG背景）；状态条与角标均pointer-events:none；标题条改为flex-wrap:wrap且拖动区最小宽120px，窄宽度时按钮组整体换行不再被裁"}
+{"stage":"fix","ts":"2026-11-07T18:03:00+08:00","action":"fix","detail":"顺带修掉悬浮窗横向溢出：meta-value补min-width:0与overflow-wrap、状态条左侧文本加省略号、悬浮窗内meta行允许换行且取值左对齐——这是描边右边缘与右下角角标看不见的根因"}
+{"stage":"verify","ts":"2026-11-07T18:05:00+08:00","action":"render","detail":"用本机Edge无头渲染实测：视口512下标题条五个控件右边界分别为322/366/410/465/495，全部在视口内，超出视口的元素数为0；默认描边1px rgba(17,24,39,.26) offset -1px，缩放态2px rgb(183,121,31)；角标::after背景已设置且pointer-events为none，状态条::before高2px；完整截图确认四边描边完整、标题条控件齐全、卡片内容无裁切"}
+{"stage":1,"ts":"2026-11-07T18:07:00+08:00","action":"edit","detail":"final_draft.md 2处修改：悬浮窗形态补边界与三态提示说明，界面表补面板边界一行"}
+{"stage":2,"ts":"2026-11-07T18:08:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html"}
+{"stage":3,"ts":"2026-11-07T18:08:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx"}
+{"stage":"package","ts":"2026-11-07T18:12:00+08:00","action":"repack","detail":"由独立会话任务重新组装并生成zip与dmg，同时校验包内float:state、onFloatState、initFloatState、outline-offset、2px solid #b7791f、pointer-events:none、flex-wrap:wrap，以及粘贴修复role: 'paste'与float:open-solo仍在"}

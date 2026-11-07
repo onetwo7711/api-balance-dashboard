@@ -414,6 +414,14 @@ function initFloatBar() {
   }
 }
 
+function initFloatState() {
+  if (!IS_DESKTOP || !window.desktopAPI || !window.desktopAPI.onFloatState) return;
+  window.desktopAPI.onFloatState((value) => {
+    document.body.classList.toggle('dragging', Boolean(value && value.moving));
+    document.body.classList.toggle('resizing', Boolean(value && value.resizing));
+  });
+}
+
 function initDesktopButtons() {
   const btn = $('floatSoloBtn');
   if (!btn) return;
@@ -464,6 +472,7 @@ function bindEvents() {
 (async function init() {
   bindEvents();
   initFloatBar();
+  initFloatState();
   initDesktopButtons();
   initDesktopHints();
   renderAll();

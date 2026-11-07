@@ -72,7 +72,8 @@ h1 { margin: 0; font-size: 21px; font-weight: 650; letter-spacing: -.3px; color:
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
   flex-wrap: wrap; font-size: 13px;
 }
-.status-left, .status-right { display: flex; align-items: center; gap: 9px; }
+.status-left, .status-right { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.status-left > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .status-right { color: var(--muted); }
 .divider { width: 1px; height: 14px; background: var(--border); }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; background: #a6adb8; }
@@ -151,7 +152,7 @@ body.mode-float .card-refresh { width: 20px; height: 20px; flex-basis: 20px; fon
 .meta { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; gap: 6px; }
 .meta-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; }
 .meta-label { color: var(--muted); flex: 0 0 auto; }
-.meta-value { color: var(--text); text-align: right; word-break: break-all; }
+.meta-value { color: var(--text); text-align: right; word-break: break-all; min-width: 0; overflow-wrap: anywhere; }
 .breakdown { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 14px; }
 .breakdown-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; border-bottom: 1px dotted var(--border); padding-bottom: 5px; }
 .breakdown-label { color: var(--muted); }
@@ -217,12 +218,13 @@ body.mode-float .card-refresh { width: 20px; height: 20px; flex-basis: 20px; fon
 body.mode-float { background: transparent; }
 body.mode-float .float-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  flex-wrap: wrap;
   margin: 8px 8px 0; padding: 6px 8px 6px 10px; border-radius: 10px;
   background: rgba(255, 255, 255, .93); border: 1px solid var(--border);
   box-shadow: none;
   -webkit-app-region: drag;
 }
-.float-drag { flex: 1 1 auto; min-width: 0; -webkit-app-region: drag; }
+.float-drag { flex: 1 1 120px; min-width: 0; -webkit-app-region: drag; }
 .float-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
 .float-actions { display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
 .float-opacity { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--muted); }
@@ -239,6 +241,8 @@ body.mode-float .statusbar { margin: 0 0 8px; padding: 8px 10px; }
 body.mode-float .status-right { display: none; }
 body.mode-float .cards { grid-template-columns: 1fr; gap: 8px; }
 body.mode-float .card { padding: 12px 14px; border-radius: 12px; }
+body.mode-float .meta-row { flex-wrap: wrap; row-gap: 2px; }
+body.mode-float .meta-value { text-align: left; }
 body.mode-float .amount { font-size: 26px; }
 body.mode-float .breakdown { display: none; }
 body.mode-float .footer { display: none; }
@@ -252,3 +256,43 @@ body.mode-float .toast { bottom: 10px; }
 .float-opacity { flex: 0 0 auto; }
 .float-opacity > span { display: none; }
 .float-opacity input { width: 52px; }
+
+/* 悬浮窗操作边界：描边画在面板内沿，用 outline 不占布局、不改变内部元素位置；
+   状态条与角标均为 pointer-events:none，不吃鼠标事件，拖拽与缩放手势响应不受影响。 */
+body.mode-float .app {
+  position: relative;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .96);
+  outline: 1px solid rgba(17, 24, 39, .26);
+  outline-offset: -1px;
+}
+body.mode-float .app::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 12px; right: 12px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: transparent;
+  pointer-events: none;
+}
+body.mode-float.dragging .app {
+  outline: 2px solid #1a1a1a;
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, .99);
+}
+body.mode-float.dragging .app::before { background: #1a1a1a; }
+body.mode-float.resizing .app {
+  outline: 2px solid #b7791f;
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, .99);
+}
+body.mode-float.resizing .app::before { background: #b7791f; }
+body.mode-float.resizing .app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><path d='M0 13 V0 H13 M27 0 H40 V13 M40 27 V40 H27 M13 40 H0 V27' fill='none' stroke='%23b7791f' stroke-width='2'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  pointer-events: none;
+}
