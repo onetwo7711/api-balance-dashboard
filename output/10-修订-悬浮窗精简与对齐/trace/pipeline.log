@@ -1,0 +1,8 @@
+{"stage":0,"ts":"2026-11-07T17:50:00+08:00","action":"init","detail":"第10轮修订：悬浮窗标题条与卡片区宽度对齐，并精简悬浮窗元素"}
+{"stage":"code","ts":"2026-11-07T17:52:00+08:00","action":"implement","detail":"public/index.html删除悬浮窗标题条中的“余额看板”文字（保留空的float-drag作为拖拽区，否则标题条无法拖动窗口）"}
+{"stage":"style","ts":"2026-11-07T17:54:00+08:00","action":"style","detail":"public/styles.css：float-bar外边距改为8px使其与卡片区等宽且左边缘对齐（此前为8px 8px 0导致比卡片窄16px，改成margin:0又比卡片宽16px，最终统一为8px）；悬浮窗形态隐藏statusbar（查询状态行）、balance-note（数据来源说明）与currency-badge（币种徽标）；金额字号26px改为22px"}
+{"stage":"verify","ts":"2026-11-07T17:57:00+08:00","action":"render","detail":"Edge无头渲染断言：标题条宽476＝卡片宽476（差0），左边界同为8，溢出元素数0；标题文字已删除；状态条、说明文字、币种徽标均已隐藏；金额字号22px；完整截图确认视觉协调"}
+{"stage":1,"ts":"2026-11-07T17:58:00+08:00","action":"edit","detail":"final_draft.md 2处修改：悬浮窗形态补精简内容与宽度一致说明，输出表币种徽标行注明悬浮窗不显示"}
+{"stage":2,"ts":"2026-11-07T17:59:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html"}
+{"stage":3,"ts":"2026-11-07T17:59:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx"}
+{"stage":"package","ts":"2026-11-07T18:05:00+08:00","action":"repack","detail":"由独立会话任务重新组装并生成zip与dmg，校验包内含新的float-bar边距、隐藏规则、22px字号，以及此前各轮改动（float:state、role: 'paste'、float:open-solo）仍在"}

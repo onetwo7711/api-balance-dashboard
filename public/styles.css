@@ -219,7 +219,7 @@ body.mode-float { background: transparent; }
 body.mode-float .float-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   flex-wrap: wrap;
-  margin: 8px 8px 0; padding: 6px 8px 6px 10px; border-radius: 10px;
+  margin: 8px; padding: 6px 8px 6px 10px; border-radius: 12px;
   background: rgba(255, 255, 255, .93); border: 1px solid var(--border);
   box-shadow: none;
   -webkit-app-region: drag;
@@ -237,13 +237,15 @@ body.mode-float .float-bar {
 .float-btn.is-active { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
 body.mode-float .app { padding: 8px; max-width: none; }
 body.mode-float .topbar { display: none; }
-body.mode-float .statusbar { margin: 0 0 8px; padding: 8px 10px; }
+body.mode-float .statusbar { display: none; }
 body.mode-float .status-right { display: none; }
 body.mode-float .cards { grid-template-columns: 1fr; gap: 8px; }
 body.mode-float .card { padding: 12px 14px; border-radius: 12px; }
 body.mode-float .meta-row { flex-wrap: wrap; row-gap: 2px; }
 body.mode-float .meta-value { text-align: left; }
-body.mode-float .amount { font-size: 26px; }
+body.mode-float .balance-note { display: none; }
+body.mode-float .currency-badge { display: none; }
+body.mode-float .amount { font-size: 22px; }
 body.mode-float .breakdown { display: none; }
 body.mode-float .footer { display: none; }
 body.mode-float .toast { bottom: 10px; }
