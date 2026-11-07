@@ -49,7 +49,7 @@
 3. 若继续修改软件：先改`server.js`与`public/`、`desktop/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
 4. 若新增功能并接入桌面端：主进程能力通过`desktop/preload.js`暴露，页面用`window.desktopAPI`判断桌面环境。
 5. 提交状态：配置目录与图标等核心改动已提交（`57fa096`、`a29ac5d`、`defceee`），桌面端粘贴修复的提交由20:22触发的独立会话任务完成；提交前需先删掉`.git/index.lock`与`.git/index2.lock`。
-6. GitHub推送已准备就绪（2026年11月7日）：远程为`https://github.com/onetwo7711/api-balance-dashboard.git`（public，空仓库），提交身份设为`onetwo7711 <603049769@qq.com>`，11次提交、62个文件共404K，工作区干净。代理已写入仓库级配置`http://127.0.0.1:7897`——WorkBuddy注入的`127.0.0.1:54455`对github.com返回502且直连不通，必须走系统代理（Clash 7897）。剩下的只是认证：全局凭据助手已设为`osxkeychain`，用户首次推送时输入一次PAT即存入钥匙串，之后可由本会话自动推送；或先`gh auth login && gh auth setup-git`（brew在沙箱内无法写/opt/homebrew，改用官方二进制装在`~/.workbuddy/binaries/gh/`）。
+6. **GitHub推送已完成**（2026年11月7日）：仓库为 https://github.com/onetwo7711/api-balance-dashboard.git（public），分支`main`，远程HEAD与本地一致（`02d2484`），共63个文件、12次提交，只含源码，不含安装包、`node_modules`与任何密钥。凭据已存入系统钥匙串（全局`osxkeychain`），本会话可自行push与pull；联网须走仓库级代理`http://127.0.0.1:7897`（Clash），WorkBuddy注入的54455端口对github.com返回502且直连不通。另备有专用SSH密钥`~/.ssh/id_ed25519_github`（公钥尚未添加到GitHub，SSH方式暂未启用）。
 
 ## 六、常用命令
 
