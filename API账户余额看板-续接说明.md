@@ -33,7 +33,7 @@
 
 1. macOS安装包未做代码签名与公证，首次打开需右键选择「打开」，或执行`xattr -dr com.apple.quarantine "/Applications/API账户余额看板.app"`。
 2. 只维护macOS版本，Intel、Windows与Linux包不再考虑。
-3. electron-builder只能在独立会话中运行：在沙箱进程内会在解压electron阶段静默挂起（进程消失、日志无报错）。本轮产物由独立会话完成，采用「在`/Users/tsubasa/.workbuddy/cache/api-balance-build/manual/`下组装、去掉`app.asar`改放`Contents/Resources/app`目录、替换`server.js`与`public/`与图标、`ditto`打包zip、`hdiutil`制作dmg、最后复制进dist」的流程，dmg与zip均已产出。Electron桌面应用在沙箱内启动会因无法删除userData下的`SingletonLock`而退出，属宿主限制，用户本机双击运行不受影响。
+3. electron-builder只能在独立会话中运行：在沙箱进程内会在解压electron阶段静默挂起（进程消失、日志无报错）。本轮产物由独立会话完成，采用「在`/Users/tsubasa/.workbuddy/cache/api-balance-build/manual/`下组装、去掉`app.asar`改放`Contents/Resources/app`目录、替换`server.js`与`public/`与图标、`ditto`打包zip、`hdiutil`制作dmg、最后复制进dist」的流程，dmg与zip均已产出。该`manual/`暂存区与其中的打包基底已清理，重建时自建即可；构建依赖`node_modules`（electron 45.2.2、electron-builder 26.18.0）仍保留在该缓存目录下，若整目录删除，重新打包前需先重装依赖。Electron桌面应用在沙箱内启动会因无法删除userData下的`SingletonLock`而退出，属宿主限制，用户本机双击运行不受影响。
 4. 沙箱内`mkdir`、`tee`、`tail`等命令被代理包装后无法创建临时文件，执行构建类命令时改用`python3 -c`建目录、直接重定向写日志，并显式设置`TMPDIR`到工作区内。
 5. 悬浮窗透明度依赖系统窗口合成能力，个别系统下不可用，滑块会自动禁用。
 6. macOS全局快捷键需在系统设置→隐私与安全性→辅助功能中授权，否则失效并在主窗口页脚提示。
