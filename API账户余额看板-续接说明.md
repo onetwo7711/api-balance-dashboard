@@ -49,7 +49,7 @@
 3. 若继续修改软件：先改`server.js`与`public/`、`desktop/`，再按`NN-修订-<改了什么>`新建修订轮目录，复用`tools/md2html.py`与html-to-doc的`convert_doc.py`重建说明文档，保持文档与实现一致。
 4. 若新增功能并接入桌面端：主进程能力通过`desktop/preload.js`暴露，页面用`window.desktopAPI`判断桌面环境。
 5. 提交状态：配置目录与图标等核心改动已提交（`57fa096`、`a29ac5d`、`defceee`），桌面端粘贴修复的提交由20:22触发的独立会话任务完成；提交前需先删掉`.git/index.lock`与`.git/index2.lock`。
-6. **GitHub推送已完成**（2026年11月7日）：仓库为 https://github.com/onetwo7711/api-balance-dashboard.git（public），分支`main`，远程HEAD与本地一致（`02d2484`），共63个文件、12次提交，只含源码，不含安装包、`node_modules`与任何密钥。凭据已存入系统钥匙串（全局`osxkeychain`），本会话可自行push与pull；联网须走仓库级代理`http://127.0.0.1:7897`（Clash），WorkBuddy注入的54455端口对github.com返回502且直连不通。另备有专用SSH密钥`~/.ssh/id_ed25519_github`（公钥尚未添加到GitHub，SSH方式暂未启用）。
+7. 主窗口新增「悬浮窗」按钮（2026年11月7日）：点击后打开悬浮窗并关闭主窗口，应用转为悬浮常驻模式，用CommandOrControl+Shift+W或悬浮窗上的「主窗口」按钮唤回完整界面。悬浮窗不再显示接口来源与本次耗时并去掉了底部投影；每张卡片右上角新增圆形刷新按钮，只重新查询对应平台（后端`/api/balance?only=<平台>`本就支持单平台过滤）。对应说明文档为第8轮修订（`output/08-修订-悬浮窗与单平台刷新/`），改动已提交并推送到GitHub（`532ef00`）。
 
 ## 六、常用命令
 
