@@ -125,7 +125,7 @@ function createMainWindow() {
       nodeIntegration: false,
     },
   });
-  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.once('ready-to-show', () => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.show(); });
   mainWindow.on('resize', rememberMainBounds);
   mainWindow.on('move', rememberMainBounds);
   mainWindow.on('closed', () => { mainWindow = null; });
@@ -334,7 +334,11 @@ app.whenReady().then(async () => {
   if (process.argv.includes('--float') || process.env.DESKTOP_FLOAT === '1') {
     createFloatWindow();
   }
-  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createMainWindow(); });
+  app.on('activate', () => {
+    // 只看主窗口本身：悬浮窗开着时，窗口总数不为零，用总数判断会导致点程序坞毫无反应
+    if (!mainWindow || mainWindow.isDestroyed()) createMainWindow();
+    else showMain();
+  });
 });
 
 app.on('will-quit', () => { globalShortcut.unregisterAll(); });

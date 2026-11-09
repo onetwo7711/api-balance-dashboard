@@ -1,0 +1,25 @@
+schema_version: 1
+request_id: B3E7C145-9A62-4D08-B7F3-5C2E89D46107
+created_at: 2026-11-09T16:40:00+08:00
+updated_at: 2026-11-09T16:52:00+08:00
+entry_type: full_pipeline
+stage_chain: [1, 2, 3]
+revision_of: 11-修订-悬浮窗背景透明度
+revision_reason: 修复关闭主窗口后点击程序坞图标无反应、主窗口无法唤回的缺陷
+output_docx_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx
+output_docx_user_specified: false
+current_stage: completed
+stages:
+  stage_0: {status: completed, completed_at: 2026-11-09T16:40:00+08:00, decision: full_pipeline}
+  stage_1: {status: completed, completed_at: 2026-11-09T16:48:00+08:00, output_path: stage1/final_draft.md, genre: general, expert_used: general-writer, route_tag: general_writing, changes: 1}
+  stage_2: {status: completed, completed_at: 2026-11-09T16:49:00+08:00, route: html, html_sub: template, output_path: stage2/formatted-API账户余额看板使用说明.html, output_format: html, skills_invoked: [design-token, doc-typeset, html-review], fallback: false, table_count: 4, heading_count: 10}
+  stage_3: {status: completed, at: 2026-11-09T16:49:00+08:00, executor: doc-converter, input_format: html, output_path: /Users/tsubasa/WorkBuddy/大模型财务查询/output/00-最终交付/API账户余额看板使用说明.docx, skill_used: [html-to-doc], present_files_opened: false}
+consistency_check: {output_files_exist: pass, stage_chain_complete: pass, last_checked_at: 2026-11-09T16:50:00+08:00, errors: [], italic_tags: 0, text_colors: ["000000"], table_count: 4, code_checks_passed: 5}
+code_changes:
+  - {file: desktop/main.js, change: activate事件改为只判断主窗口是否存在，主窗口缺失则新建、存在则showMain唤回；ready-to-show回调加空值保护}
+artifact_changes:
+  - {file: desktop/dist/API账户余额看板.app, change: 重新组装并刷新主进程}
+  - {file: desktop/dist/API账户余额看板-1.0.0-arm64.zip, change: 重新打包}
+  - {file: desktop/dist/API账户余额看板-1.0.0-arm64.dmg, change: 重新生成}
+publish:
+  - {remote: "https://github.com/onetwo7711/api-balance-dashboard.git", branch: main, note: "凭据存于系统钥匙串，代理走仓库级127.0.0.1:7897"}

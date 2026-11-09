@@ -1,0 +1,8 @@
+{"stage":0,"ts":"2026-11-09T16:40:00+08:00","action":"init","detail":"第12轮修订：修复关闭主窗口后点击程序坞图标无反应"}
+{"stage":"diag","ts":"2026-11-09T16:42:00+08:00","action":"diagnose","detail":"定位根因：desktop/main.js的app.on('activate')原写作if (BrowserWindow.getAllWindows().length === 0) createMainWindow()，用“窗口总数”判断是否需要创建主窗口。用户点过主窗口的「悬浮窗」按钮后主窗口被关闭、悬浮窗仍在，此时窗口总数为1，故activate事件什么都不做，表现为点击程序坞图标毫无反应。该判断在桌面化改造初期就存在，但此前关闭主窗口后没有其他窗口常驻，难以触发；「悬浮窗」按钮把主窗口关掉后该场景变得容易发生，从而暴露此问题"}
+{"stage":"code","ts":"2026-11-09T16:45:00+08:00","action":"implement","detail":"activate改为只看主窗口本身：主窗口不存在或已销毁则createMainWindow()，否则showMain()（恢复最小化、显示并聚焦）；同时给ready-to-show回调加空值保护，避免旧窗口的延迟回调作用到新窗口上"}
+{"stage":"verify","ts":"2026-11-09T16:47:00+08:00","action":"check","detail":"语法检查通过；代码级校验5项全过：activate按主窗口判断、不再使用getAllWindows()、主窗口存在时调用showMain()、ready-to-show带空值保护、second-instance仍唤回主窗口。真实点击行为需在用户本机安装后确认"}
+{"stage":1,"ts":"2026-11-09T16:48:00+08:00","action":"edit","detail":"final_draft.md 1处修改：启动小节补充关闭主窗口后应用仍在后台运行、点程序坞图标可重新打开、纯悬浮模式下同样可唤回"}
+{"stage":2,"ts":"2026-11-09T16:49:00+08:00","action":"render","detail":"md2html.py 生成 stage2/formatted-API账户余额看板使用说明.html"}
+{"stage":3,"ts":"2026-11-09T16:49:00+08:00","action":"convert","detail":"html-to-doc convert_doc.py 输出 output/00-最终交付/API账户余额看板使用说明.docx"}
+{"stage":"package","ts":"2026-11-09T16:52:00+08:00","action":"repack","detail":"由独立会话任务重新组装并生成zip与dmg，校验包内activate按主窗口判断且不含getAllWindows()，以及此前各轮改动仍在"}
